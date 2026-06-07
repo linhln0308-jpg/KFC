@@ -1,20 +1,30 @@
 import streamlit as st
 import google.generativeai as genai
 
-# Cấu hình API key từ Secrets
-try:
-    genai.configure(api_key=st.secrets["GOOGLE_API_KEY"])
-    model = genai.GenerativeModel("gemini-2.5-flash")
-except Exception as e:
-    st.error(f"Lỗi khởi tạo API: {e}")
+# Cấu hình API
+genai.configure(api_key=st.secrets["GOOGLE_API_KEY"])
+model = genai.GenerativeModel("gemini-2.5-flash")
 
-st.title("KFC Nutrition Checker")
-user_input = st.text_input("Nhập món ăn bạn muốn kiểm tra:")
+st.title("🍔 KFC Food Advisor")
+st.write("Nhập các thành phần bạn bị dị ứng, tôi sẽ gợi ý món ăn an toàn cho bạn!")
 
-if user_input:
-    try:
-        response = model.generate_content(f"Phân tích dinh dưỡng của món: {user_input}")
-        st.write(response.text)
-    except Exception as e:
-        st.error(f"Lỗi khi gọi AI: {e}")
+# Nhập danh sách dị ứng
+allergies = st.text_input("Các thành phần bạn bị dị ứng (ví dụ: đậu phộng, tôm, hải sản):")
+
+if st.button("Gợi ý món ăn"):
+    if allergies:
+        prompt = f"""
+        Bạn là chuyên gia tư vấn thực phẩm của KFC. 
+        Người dùng bị dị ứng với các thành phần sau: {allergies}.
+        Hãy gợi ý cho họ các món ăn trong thực đơn KFC mà họ có thể ăn an toàn. 
+        Nếu không có món nào an toàn, hãy cảnh báo họ. 
+        Giải thích ngắn gọn lý do tại sao món đó an toàn.
+        """
+        
+        with st.spinner('Đang tìm món ăn phù hợp cho bạn...'):
+            response = model.generate_content(prompt)
+            st.success("Dưới đây là gợi ý dành cho bạn:")
+            st.write(response.text)
+    else:
+        st.warning("Vui lòng nhập món bạn bị dị ứng trước nhé!")
   
