@@ -4,7 +4,7 @@ import google.generativeai as genai
 # Cấu hình API key
 genai.configure(api_key=st.secrets["GOOGLE_API_KEY"])
 
-model = genai.GenerativeModel("gemini-1.5-flash")
+model = genai.GenerativeModel("gemini-pro")
 
 st.title("KFC Nutrition Checker")
 user_input = st.text_input("Nhập món ăn bạn muốn kiểm tra:")
