@@ -1,17 +1,20 @@
 import streamlit as st
 import google.generativeai as genai
 
-# Gọi trực tiếp từ secrets
-api_key = st.secrets["GOOGLE_API_KEY"]
-genai.configure(api_key=api_key)
-
-# Sử dụng model flash mới nhất
-model = genai.GenerativeModel("gemini-1.5-flash-latest")
+# Cấu hình API key từ Secrets
+try:
+    genai.configure(api_key=st.secrets["GOOGLE_API_KEY"])
+    model = genai.GenerativeModel("gemini-2.5-flash")
+except Exception as e:
+    st.error(f"Lỗi khởi tạo API: {e}")
 
 st.title("KFC Nutrition Checker")
-user_input = st.text_input("Nhập món ăn:")
+user_input = st.text_input("Nhập món ăn bạn muốn kiểm tra:")
 
 if user_input:
-    response = model.generate_content(f"Phân tích dinh dưỡng món: {user_input}")
-    st.write(response.text)
+    try:
+        response = model.generate_content(f"Phân tích dinh dưỡng của món: {user_input}")
+        st.write(response.text)
+    except Exception as e:
+        st.error(f"Lỗi khi gọi AI: {e}")
   
